@@ -12,7 +12,7 @@ then
 	exit
 fi
 ####updating system####
-sudo apt update
+apt update
 
 ####checking if samba is in the system, if not, then install it####
 if dpkg -s samba >/dev/null 2>&1;
@@ -20,16 +20,16 @@ then
 	echo "samba is installed"
 else
 	echo "installing samba"
-	sudo apt -y install samba
+	apt -y install samba
 fi
 
 sleep 1
 
 #####back up default config#####
-sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.bk
+mv /etc/samba/smb.conf /etc/samba/smb.conf.bk
 
 #####config files#####
-sudo echo '[global]
+echo '[global]
 server string = File server
 workgroup = WORKGROUP
 security = user
@@ -37,7 +37,7 @@ map to guest = Bad User
 name resolve order = bcast host
 include = /etc/samba/shares.conf'> /etc/samba/smb.conf
 
-sudo echo '[Public Files]
+echo '[Public Files]
 path = /Smbshares/public_files
 force user = smbuser
 force group = smbgroup
@@ -58,16 +58,16 @@ force directory mask = 0775
 public = yes
 writeable = no'>/etc/samba/shares.conf
 #####creating share directories#####
-sudo mkdir -p /Smbshares/public_files
-sudo mkdir /Smbshares/Protected_files
+mkdir -p /Smbshares/public_files
+mkdir /Smbshares/Protected_files
 #####creating system users to granted #####
-sudo groupadd --system smbgroup
-sudo useradd --system --no-create-home --group smbgroup -s /bin/false smbuser
+groupadd --system smbgroup
+useradd --system --no-create-home --group smbgroup -s /bin/false smbuser
 #####changing permission from share directory#####
-sudo chown -R smbuser:smbgroup /Smbshares
-sudo chmod -R g+w /Smbshares
+chown -R smbuser:smbgroup /Smbshares
+chmod -R g+w /Smbshares
 #####restarting service#####
-sudo systemctl restart smbd.service
+systemctl restart smbd.service
 
 echo "samba installed and configured"
 
